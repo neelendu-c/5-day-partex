@@ -1,52 +1,39 @@
+from fastapi import FastAPI,APIRouter
+from config import collection
+from schemas import all_rooms
 from models import Product
-from fastapi import FastAPI
-app = FastAPI()
-# Use localhost:8000/docs
+from bson.objectid import ObjectId
 
-# Main page
-@app.get("/")
-def greet():
-    return "Welcome to Room Rental"
 
-products = [
-    Product(id=1,name="House",description="Very good",price=5000),
-    Product(id=2,name="House 2",description="Good",price=6000),
-    Product(id=500,name="House 3",description="Ok",price=7000)
-]
 
-# Show all rooms
-@app.get("/rooms")
-def get_all_rooms():
-    return products
+app=FastAPI()
+router=APIRouter()
 
-# Show 1 room
-@app.get("/room/{id}")
-def room_by_id(id: int):
-    for product in products:
-        if product.id==id:
-            return product
-    return "invalid product"
+@router.get("/")
+async def get_all_rooms():
+    data=collection.find()
+    return all_rooms(data)
 
-# Add room
-@app.post("/product")
-def add_room(product: Product):
-    products.append(product)
-    return product
+app.include_router(router)
 
-# Update room
-@app.put("/product")
-def update_room(id:int, product: Product):
-    for i in range(len(products)):
-        if products[i].id==id:
-            products[i] = product
-            return "room updated"
-    return "Invalid room"
+@router.post("/")
+async def add_room(new_room: Product):
+    response=collection.insert_one(dict(new_room))
+    return{"id":str(response.inserted_id)}
 
-# Delete room
-@app.delete("/product")
-def delete_room(id:int):
-    for i in range(len(products)):
-        if products[i].id==id:
-            del products[i]
-            return "Room deleted"
-    return "Invalid room"
+app.include_router(router)
+
+@router.put("/{room_id}")
+async def update_room(room_id:str, updated_room: Product):
+    id=ObjectId(room_id)    
+    response=collection.update_one({"_id":id},{"$set":dict(updated_room)})
+    return "Updated task"
+
+
+@router.delete("/{room_id}")
+async def delete_room(room_id:str):
+    id=ObjectId(room_id)
+    response=collection.delete_one({"_id":id})
+    return "Deleted task"
+
+app.include_router(router)
