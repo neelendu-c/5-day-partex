@@ -11,3 +11,7 @@ Local to server linked MySQL CRUD operations with SQLAlchemy integeration + Git 
 Day 3:
 
 Created a branch for MongoDB integration with full CRUD operations, setting up .env.example file. 
+
+
+Day 4:
+Implemented pagination, filtering, and sorting options using MongoDB.
