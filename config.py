@@ -1,13 +1,15 @@
 from pymongo import MongoClient
 import os
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv,dotenv_values
+from dotenv import load_dotenv
 
 load_dotenv()
 
-uri = os.getenv("URI")
+uri = os.getenv("MONGODB_URI")
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 db=client.rooms_db
 collection=db["rooms-data"]
+# config used for validation of .env variables
+# odm and orm
