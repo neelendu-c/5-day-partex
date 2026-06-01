@@ -1,0 +1,34 @@
+tags:
+
+parameters:
+  - name: id
+    in: query
+    type: integer
+    required: false
+    description: ID of room
+  - name: name
+    in: query
+    type: string
+    required: false
+    description: Updated name of room
+  - name: desc
+    in: query
+    type: string
+    required: false
+    description: Updated description of room
+  - name: price
+    in: query
+    type: integer
+    required: false
+    description: Updated price of room
+
+responses:
+  200:
+    description: Update a room by ID
+    schema:
+      id: return_test
+      properties:
+        result:
+          type: string
+          description: The test
+          default: test

@@ -1,0 +1,19 @@
+tags:
+
+parameters:
+  - name: id
+    in: query
+    type: integer
+    required: false
+    description: Room id
+
+responses:
+  200:
+    description: Delete room by id
+    schema:
+      id: return_test
+      properties:
+        result:
+          type: string
+          description: The test
+          default: test

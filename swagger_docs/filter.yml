@@ -1,0 +1,29 @@
+tags:
+
+parameters:
+  - name: type
+    in: query
+    type: integer
+    required: false
+    description: Filtering option
+  - name: filter
+    in: query
+    type: string
+    required: false
+    description: Field to filter
+  - name: filtertype
+    in: query
+    type: string
+    required: false
+    description: Less than X, greater than X, etc
+
+responses:
+  200:
+    description: Filtering
+    schema:
+      id: return_test
+      properties:
+        result:
+          type: string
+          description: The test
+          default: test
