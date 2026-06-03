@@ -1,0 +1,16 @@
+tags:
+  - Users
+
+security:
+  - Bearer: []
+
+responses:
+  200:
+    description: User profile data
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+  401:
+    description: Unauthorized

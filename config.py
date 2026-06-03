@@ -11,5 +11,3 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 
 db=client.rooms_db
 collection=db["rooms-data"]
-# config used for validation of .env variables
-# odm and orm

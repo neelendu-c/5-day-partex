@@ -1,45 +1,22 @@
 from flask import Flask,request,jsonify,g 
-from flask_pymongo import PyMongo
-from db_connection import uri,mongo
+from db_connection import mongo, app, uri
 from flasgger import Swagger, swag_from
-from middleware import swagger_config,template
+from swagtemplates import swagger_config,template
+import logger
+from middleware import key, jwt_required
 import jwt
-import time
 
-app=Flask(__name__)
-app.config["MONGO_URI"]=uri
-mongo.init_app(app)
-mongo.db=mongo.cx["rooms_db"]
 Swagger(app, config=swagger_config, template=template)
 
-@app.before_request
-def before_request():
-    g.start_time = time.time()
-
-    print(f"\nIncoming Request")
-    print(f"Method: {request.method}")
-    print(f"Path: {request.path}")
-    print(f"Args: {dict(request.args)}")
-
-
-@app.after_request
-def after_request(response):
-    duration = time.time() - g.start_time
-    print(f"Status: {response.status_code}")
-    print(f"Time: {duration:.4f}s")
-    response.headers["X-Execution-Time"] = str(duration)
-
-    return response
-
-    
 
 # print("URI:", uri)
 # print("Mongo:", mongo)
 # print("Mongo DB:", mongo.db)
 
+
 # @app.route("/verify/{token}",methods=['GET'])
 # @swag_from("swagger_docs/verify.yml")
-# def verify():
+# def jwt():
 #     token=request.args.get('token','1')
 #     try:
 #         payload=jwt.decode(token,"testkey",algorithm=['HS256'])
@@ -49,11 +26,35 @@ def after_request(response):
 #     except:
 #         print("Error processing token")
 #     return {}
-    
+
+
+@app.route("/login", methods=["POST"])
+@swag_from("swagger_docs/login.yml")
+def login():
+    username=request.get_json().get("username")
+    token=jwt.encode({"username":username},key,algorithm="HS256")
+    return {"token": token}
+
+
+@app.route("/profile", methods=["GET"])
+@swag_from("swagger_docs/profile.yml")
+@jwt_required
+def profile():
+    return {"username":request.user["username"]}
+
+
 @app.route("/test", methods=['GET'])
 @swag_from("swagger_docs/test.yml")
 def recs():
-    size = int(request.args.get('size', 1))
+    app.logger.info(f"\nIncoming Request")
+    app.logger.info(f"Method: {request.method}")
+    app.logger.info(f"Path: {request.path}")
+    size = int((request.args.get('size', 1)))
+    app.logger.info(f"Input type: {type(size)}")
+    # if(type(size)!=int):
+    #     app.logger.critical(f"Incorrect input type {type(size)}. Expected integer")
+    #     return {"result": "Error"}
+    app.logger.info(f"Args: {dict(request.args)}")
     return {"result": "test" * size}
 
 @app.route("/show",methods=["GET"])
@@ -82,8 +83,6 @@ def insert_one():
     mongo.db["rooms-data"].insert_one(room)
     return{"result": "Room added successfully"}
 
-
-
 @app.route("/update", methods=['PUT'])
 @swag_from("swagger_docs/update.yml")
 def update():
@@ -95,8 +94,6 @@ def update():
     mongo.db["rooms-data"].update_one({"id": id}, {"$set": dict(room)})
     return {"result": "Updated room"}
 
-
-
 @app.route("/sort", methods=['GET'])
 @swag_from("swagger_docs/sort.yml")
 def sort():
@@ -106,17 +103,12 @@ def sort():
     data=list(rooms)
     return jsonify(data)
 
-
-
 @app.route("/delete", methods=['DELETE'])
 @swag_from("swagger_docs/delete.yml")
 def delete():
     id=int(request.args.get('id',1))
     mongo.db["rooms-data"].delete_one({"id": id})
     return {"result": "Deleted task"}
-
-
-
 
 @app.route("/filter", methods=['GET'])
 @swag_from("swagger_docs/filter.yml")
@@ -139,8 +131,6 @@ def filtering():
     
     rooms=mongo.db["rooms-data"].find(filter_query)
     return jsonify(rooms)
-
-
 
 if __name__== '__main__':
     app.run(debug=True)

@@ -1,0 +1,22 @@
+tags:
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+responses:
+  200:
+    description: JWT token generated
+    schema:
+      type: object
+      properties:
+        token:
+          type: string
+    
