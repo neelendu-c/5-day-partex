@@ -1,13 +1,18 @@
-Day 1: 
+Phase 1: 
 
-Basic FastAPI app hosted with  Uvicorn and Swagger UI for testing. Uses GET, POST, PUT, DELETE methods.
-
-
-Day 2:
-
-Local to server linked MySQL CRUD operations with SQLAlchemy integeration + Git branching. 
+Created reusable LLM client using Llama with short memory and structued JSON output.
 
 
-Day 3:
+Phase 2:
 
-Created a branch for MongoDB integration with full CRUD operations, setting up .env.example file. 
+Created working tools for AI to use with high accuracy to edit database. 
+
+
+Phase 3:
+
+Created agent class with ReAct framework system prompt and logging. 
+
+
+Phase 4:
+
+Exposed agent via FastAPI endpoint and answering with formatted responses.

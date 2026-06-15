@@ -1,6 +1,4 @@
-# from pymongo import MongoClient
 import os
-# from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from flask import Flask
 from flask_pymongo import PyMongo
@@ -14,3 +12,4 @@ app.config["MONGO_URI"]=uri
 mongo=PyMongo()
 mongo.init_app(app)
 mongo.db=mongo.cx["rooms_db"]
+
